@@ -7,17 +7,24 @@
     <title>Treino</title>
 </head>
 <body>
-    <div class="container">
-        <h2>Registre seu Treino</h2>
-        
-        <form id="exerciseForm">
-            <input type="text" id="exercise" placeholder="Exercício">
-            <input type="number" id="series" placeholder="Séries">
-            <input type="number" id="reps" placeholder="Repetições">
-            <input type="number" id="weight" placeholder="Carga (kg)">
-            <button type="submit">Adicionar</button>
-        </form>
+    <div id="loginContainer">
+        <h2>Login</h2>
+        <input type="email" id="email" placeholder="E-mail">
+        <input type="password" id="password" placeholder="Senha">
+        <button id="loginButton">Login</button>
+        <button id="registerButton">Registrar</button>
+        <p id="loginMessage"></p>
+    </div>
 
+    <div id="appContainer" style="display:none;">
+        <h2>Registre seu Treino</h2>
+        <input type="text" id="exercise" placeholder="Exercício">
+        <input type="number" id="series" placeholder="Séries">
+        <input type="number" id="reps" placeholder="Repetições">
+        <input type="number" id="weight" placeholder="Carga (kg)">
+        <button id="addButton">Adicionar</button>
+        <button id="logoutButton">Logout</button>
+        
         <h2>Treinos Salvos</h2>
         <ul id="exerciseList"></ul>
 
@@ -29,170 +36,94 @@
     </div>
 
     <script type="module">
-        function startRestTimer() {
-    let timeLeft = parseInt(document.getElementById("restTime").value);
-    let timerDisplay = document.getElementById("timerDisplay");
-
-    if (isNaN(timeLeft) || timeLeft <= 0) {
-        alert("Digite um tempo válido para o descanso.");
-        return;
-    }
-
-    // Formatação inicial
-    timerDisplay.textContent = formatTime(timeLeft);
-
-    let timerInterval = setInterval(() => {
-        timeLeft--;
-
-        if (timeLeft < 0) {
-            clearInterval(timerInterval);
-            timerDisplay.textContent = "Tempo Esgotado!";
-            return;
-        }
-
-        timerDisplay.textContent = formatTime(timeLeft);
-    }, 1000);
-}
-
-// Função para formatar o tempo (minutos e segundos)
-function formatTime(seconds) {
-    let min = Math.floor(seconds / 60);
-    let sec = seconds % 60;
-    return `${String(min).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
-}
-
-// Adiciona o evento ao botão de iniciar descanso
-document.getElementById("startTimer").addEventListener("click", startRestTimer);
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  getDocs,
-  updateDoc,
-  deleteDoc,
-  doc
-} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-// Configuração do Firebase
-const firebaseConfig = {
-	apiKey: "AIzaSyBw9yVvY1T-HFs6CF5ttKgDGafpKW1xr8o",
+    const firebaseConfig = {
+        apiKey: "AIzaSyBw9yVvY1T-HFs6CF5ttKgDGafpKW1xr8o",
         authDomain: "meu-treino-cd8f9.firebaseapp.com",
         projectId: "meu-treino-cd8f9",
         storageBucket: "meu-treino-cd8f9.firebasestorage.app",
         messagingSenderId: "993126178625",
         appId: "1:993126178625:web:6425d4a03cf0b41e544bc0"
-};
+    };
 
-// Inicializa Firebase e Firestore
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+    const db = getFirestore(app);
 
-// Função para adicionar um novo exercício
-async function addExercise(event) {
-  event.preventDefault(); // Evita o recarregamento da página
-  
-  let exercise = document.getElementById("exercise").value.trim();
-  let series = document.getElementById("series").value.trim();
-  let reps = document.getElementById("reps").value.trim();
-  let weight = document.getElementById("weight").value.trim();
-
-  if (!exercise || !series || !reps || !weight) {
-    alert("Preencha todos os campos!");
-    return;
-  }
-
-  try {
-    await addDoc(collection(db, "exercises"), {
-      exercise,
-      series,
-      reps,
-      weight
+    document.getElementById("loginButton").addEventListener("click", async () => {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            document.getElementById("loginMessage").textContent = "Login bem-sucedido!";
+        } catch (error) {
+            document.getElementById("loginMessage").textContent = "Erro: " + error.message;
+        }
     });
 
-    alert("Exercício adicionado com sucesso!");
-    document.getElementById("exerciseForm").reset();
-    loadExercises(); // Atualiza a lista após adicionar
-  } catch (error) {
-    console.error("Erro ao adicionar exercício: ", error);
-  }
-}
-
-// Função para carregar os exercícios na lista
-async function loadExercises() {
-  try {
-    const querySnapshot = await getDocs(collection(db, "exercises"));
-    let list = document.getElementById("exerciseList");
-    list.innerHTML = "";
-
-    querySnapshot.forEach((docSnap) => {
-      let data = docSnap.data();
-      let li = document.createElement("li");
-      li.textContent = `${data.exercise} - ${data.series} séries - ${data.reps} reps - ${data.weight} kg`;
-
-      // Criando o botão de edição
-      let editButton = document.createElement("button");
-      editButton.textContent = "✏️";
-      editButton.addEventListener("click", function () {
-        editExercise(docSnap.id, data.exercise, data.series, data.reps, data.weight);
-      });
-
-      // Criando o botão de exclusão
-      let deleteButton = document.createElement("button");
-      deleteButton.textContent = "🗑️";
-      deleteButton.addEventListener("click", function () {
-        deleteExercise(docSnap.id);
-      });
-
-      li.appendChild(editButton);
-      li.appendChild(deleteButton);
-      list.appendChild(li);
+    document.getElementById("registerButton").addEventListener("click", async () => {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        try {
+            await createUserWithEmailAndPassword(auth, email, password);
+            document.getElementById("loginMessage").textContent = "Conta criada com sucesso!";
+        } catch (error) {
+            document.getElementById("loginMessage").textContent = "Erro: " + error.message;
+        }
     });
-  } catch (error) {
-    console.error("Erro ao carregar exercícios: ", error);
-  }
-}
 
-// Função para editar um exercício
-async function editExercise(id, oldExercise, oldSeries, oldReps, oldWeight) {
-  let newExercise = prompt("Nome do exercício:", oldExercise);
-  let newSeries = prompt("Número de séries:", oldSeries);
-  let newReps = prompt("Número de repetições:", oldReps);
-  let newWeight = prompt("Peso utilizado (kg):", oldWeight);
+    document.getElementById("logoutButton").addEventListener("click", async () => {
+        await signOut(auth);
+    });
 
-  if (newExercise && newSeries && newReps && newWeight) {
-    try {
-      await updateDoc(doc(db, "exercises", id), {
-        exercise: newExercise,
-        series: newSeries,
-        reps: newReps,
-        weight: newWeight
-      });
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            document.getElementById("loginContainer").style.display = "none";
+            document.getElementById("appContainer").style.display = "block";
+            loadExercises();
+        } else {
+            document.getElementById("loginContainer").style.display = "block";
+            document.getElementById("appContainer").style.display = "none";
+        }
+    });
 
-      loadExercises();
-    } catch (error) {
-      console.error("Erro ao atualizar exercício: ", error);
+    async function addExercise() {
+        let exercise = document.getElementById("exercise").value.trim();
+        let series = document.getElementById("series").value.trim();
+        let reps = document.getElementById("reps").value.trim();
+        let weight = document.getElementById("weight").value.trim();
+        if (!exercise || !series || !reps || !weight) {
+            alert("Preencha todos os campos!");
+            return;
+        }
+        try {
+            await addDoc(collection(db, "exercises"), { exercise, series, reps, weight });
+            alert("Exercício adicionado com sucesso!");
+            loadExercises();
+        } catch (error) {
+            console.error("Erro ao adicionar exercício: ", error);
+        }
     }
-  }
-}
+    document.getElementById("addButton").addEventListener("click", addExercise);
 
-// Função para excluir um exercício
-async function deleteExercise(id) {
-  if (confirm("Tem certeza que deseja excluir este exercício?")) {
-    try {
-      await deleteDoc(doc(db, "exercises", id));
-      loadExercises();
-    } catch (error) {
-      console.error("Erro ao excluir exercício: ", error);
+    async function loadExercises() {
+        try {
+            const querySnapshot = await getDocs(collection(db, "exercises"));
+            let list = document.getElementById("exerciseList");
+            list.innerHTML = "";
+            querySnapshot.forEach((docSnap) => {
+                let data = docSnap.data();
+                let li = document.createElement("li");
+                li.textContent = `${data.exercise} - ${data.series} séries - ${data.reps} reps - ${data.weight} kg`;
+                list.appendChild(li);
+            });
+        } catch (error) {
+            console.error("Erro ao carregar exercícios: ", error);
+        }
     }
-  }
-}
-
-// Event Listener para o formulário
-document.getElementById("exerciseForm").addEventListener("submit", addExercise);
-
-// Carrega os exercícios ao iniciar
-loadExercises();
     </script>
 </body>
 
