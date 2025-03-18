@@ -7,6 +7,7 @@
     <title>Treino</title>
 </head>
 <body>
+    <!-- Login Section -->
     <div id="loginContainer">
         <h2>Login</h2>
         <input type="email" id="email" placeholder="E-mail">
@@ -16,6 +17,7 @@
         <p id="loginMessage"></p>
     </div>
 
+    <!-- Main App Section (Hidden initially) -->
     <div id="appContainer" style="display:none;">
         <h2>Registre seu Treino</h2>
         <input type="text" id="exercise" placeholder="Exercício">
@@ -28,102 +30,224 @@
         <h2>Treinos Salvos</h2>
         <ul id="exerciseList"></ul>
 
-        <h2>Cronômetro de Descanso</h2>
-        <label>Tempo (segundos):</label>
-        <input type="number" id="restTime" value="60">
-        <button id="startTimer">Iniciar Descanso</button>
-        <p id="timerDisplay">00:00</p>
+        <!-- Cronômetro Section -->
+        <div id="timerSection">
+            <h3>Cronômetro</h3>
+            <p id="timer">00:00</p>
+            <button id="startTimerButton">Iniciar</button>
+            <button id="stopTimerButton">Parar</button>
+            <button id="resetTimerButton">Reiniciar</button>
+        </div>
+        
+        <button id="undoButton" style="display:none;">Desfazer</button>
     </div>
 
     <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyBw9yVvY1T-HFs6CF5ttKgDGafpKW1xr8o",
-        authDomain: "meu-treino-cd8f9.firebaseapp.com",
-        projectId: "meu-treino-cd8f9",
-        storageBucket: "meu-treino-cd8f9.firebasestorage.app",
-        messagingSenderId: "993126178625",
-        appId: "1:993126178625:web:6425d4a03cf0b41e544bc0"
-    };
+        const firebaseConfig = {
+            apiKey: "AIzaSyBw9yVvY1T-HFs6CF5ttKgDGafpKW1xr8o",
+            authDomain: "meu-treino-cd8f9.firebaseapp.com",
+            projectId: "meu-treino-cd8f9",
+            storageBucket: "meu-treino-cd8f9.firebasestorage.app",
+            messagingSenderId: "993126178625",
+            appId: "1:993126178625:web:6425d4a03cf0b41e544bc0"
+        };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth();
-    const db = getFirestore(app);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const db = getFirestore(app);
 
-    document.getElementById("loginButton").addEventListener("click", async () => {
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
-        try {
-            await signInWithEmailAndPassword(auth, email, password);
-            document.getElementById("loginMessage").textContent = "Login bem-sucedido!";
-        } catch (error) {
-            document.getElementById("loginMessage").textContent = "Erro: " + error.message;
-        }
-    });
+        let lastDeletedExercise = null;
+        let lastDeletedData = null;
 
-    document.getElementById("registerButton").addEventListener("click", async () => {
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
-        try {
-            await createUserWithEmailAndPassword(auth, email, password);
-            document.getElementById("loginMessage").textContent = "Conta criada com sucesso!";
-        } catch (error) {
-            document.getElementById("loginMessage").textContent = "Erro: " + error.message;
-        }
-    });
+        document.getElementById("loginButton").addEventListener("click", async () => {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                document.getElementById("loginMessage").textContent = "Login bem-sucedido!";
+            } catch (error) {
+                document.getElementById("loginMessage").textContent = "Erro: " + error.message;
+            }
+        });
 
-    document.getElementById("logoutButton").addEventListener("click", async () => {
-        await signOut(auth);
-    });
+        document.getElementById("registerButton").addEventListener("click", async () => {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+                document.getElementById("loginMessage").textContent = "Conta criada com sucesso!";
+            } catch (error) {
+                document.getElementById("loginMessage").textContent = "Erro: " + error.message;
+            }
+        });
 
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            document.getElementById("loginContainer").style.display = "none";
-            document.getElementById("appContainer").style.display = "block";
-            loadExercises();
-        } else {
-            document.getElementById("loginContainer").style.display = "block";
-            document.getElementById("appContainer").style.display = "none";
-        }
-    });
+        document.getElementById("logoutButton").addEventListener("click", async () => {
+            await signOut(auth);
+        });
 
-    async function addExercise() {
-        let exercise = document.getElementById("exercise").value.trim();
-        let series = document.getElementById("series").value.trim();
-        let reps = document.getElementById("reps").value.trim();
-        let weight = document.getElementById("weight").value.trim();
-        if (!exercise || !series || !reps || !weight) {
-            alert("Preencha todos os campos!");
-            return;
-        }
-        try {
-            await addDoc(collection(db, "exercises"), { exercise, series, reps, weight });
-            alert("Exercício adicionado com sucesso!");
-            loadExercises();
-        } catch (error) {
-            console.error("Erro ao adicionar exercício: ", error);
-        }
-    }
-    document.getElementById("addButton").addEventListener("click", addExercise);
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById("loginContainer").style.display = "none";
+                document.getElementById("appContainer").style.display = "block";
+                loadExercises();
+            } else {
+                document.getElementById("loginContainer").style.display = "block";
+                document.getElementById("appContainer").style.display = "none";
+            }
+        });
 
-    async function loadExercises() {
-        try {
+        document.getElementById("addButton").addEventListener("click", async () => {
+            const exercise = document.getElementById("exercise").value;
+            const series = document.getElementById("series").value;
+            const reps = document.getElementById("reps").value;
+            const weight = document.getElementById("weight").value;
+
+            if (exercise && series && reps && weight) {
+                try {
+                    await addDoc(collection(db, "exercises"), {
+                        exercise,
+                        series,
+                        reps,
+                        weight
+                    });
+                    loadExercises(); // Recarregar a lista
+                } catch (error) {
+                    console.error("Erro ao adicionar exercício: ", error);
+                }
+            } else {
+                alert("Preencha todos os campos!");
+            }
+        });
+
+        async function loadExercises() {
             const querySnapshot = await getDocs(collection(db, "exercises"));
             let list = document.getElementById("exerciseList");
             list.innerHTML = "";
             querySnapshot.forEach((docSnap) => {
                 let data = docSnap.data();
                 let li = document.createElement("li");
-                li.textContent = `${data.exercise} - ${data.series} séries - ${data.reps} reps - ${data.weight} kg`;
+                li.innerHTML = `${data.exercise} - ${data.series} séries - ${data.reps} reps - ${data.weight} kg 
+                <button onclick="editExercise('${docSnap.id}', '${data.exercise}', '${data.series}', '${data.reps}', '${data.weight}')">Editar</button>
+                <button onclick="deleteExercise('${docSnap.id}')">Excluir</button>`;
                 list.appendChild(li);
             });
-        } catch (error) {
-            console.error("Erro ao carregar exercícios: ", error);
         }
-    }
+
+        window.deleteExercise = async function (id) {
+            const docRef = doc(db, "exercises", id);
+            lastDeletedExercise = docRef;
+            lastDeletedData = (await getDoc(docRef)).data();
+            await deleteDoc(docRef);
+            loadExercises();
+            document.getElementById("undoButton").style.display = "block"; // Exibir o botão de desfazer
+        };
+
+        window.editExercise = function (id, exercise, series, reps, weight) {
+            document.getElementById("exercise").value = exercise;
+            document.getElementById("series").value = series;
+            document.getElementById("reps").value = reps;
+            document.getElementById("weight").value = weight;
+
+            document.getElementById("addButton").textContent = "Salvar Alterações";
+            document.getElementById("addButton").onclick = async () => {
+                const updatedExercise = document.getElementById("exercise").value;
+                const updatedSeries = document.getElementById("series").value;
+                const updatedReps = document.getElementById("reps").value;
+                const updatedWeight = document.getElementById("weight").value;
+
+                if (updatedExercise && updatedSeries && updatedReps && updatedWeight) {
+                    await updateDoc(doc(db, "exercises", id), {
+                        exercise: updatedExercise,
+                        series: updatedSeries,
+                        reps: updatedReps,
+                        weight: updatedWeight
+                    });
+                    loadExercises();
+                    resetForm();
+                } else {
+                    alert("Preencha todos os campos!");
+                }
+            };
+        };
+
+        document.getElementById("undoButton").addEventListener("click", async () => {
+            if (lastDeletedExercise && lastDeletedData) {
+                await addDoc(collection(db, "exercises"), lastDeletedData);
+                loadExercises();
+            }
+            document.getElementById("undoButton").style.display = "none"; // Ocultar o botão de desfazer
+        });
+
+        function resetForm() {
+            document.getElementById("exercise").value = "";
+            document.getElementById("series").value = "";
+            document.getElementById("reps").value = "";
+            document.getElementById("weight").value = "";
+            document.getElementById("addButton").textContent = "Adicionar";
+            document.getElementById("addButton").onclick = async () => {
+                const exercise = document.getElementById("exercise").value;
+                const series = document.getElementById("series").value;
+                const reps = document.getElementById("reps").value;
+                const weight = document.getElementById("weight").value;
+
+                if (exercise && series && reps && weight) {
+                    try {
+                        await addDoc(collection(db, "exercises"), {
+                            exercise,
+                            series,
+                            reps,
+                            weight
+                        });
+                        loadExercises(); // Recarregar a lista
+                    } catch (error) {
+                        console.error("Erro ao adicionar exercício: ", error);
+                    }
+                } else {
+                    alert("Preencha todos os campos!");
+                }
+            };
+        }
+
+        // Cronômetro
+        let timer;
+        let seconds = 0;
+        let minutes = 0;
+
+        document.getElementById("startTimerButton").addEventListener("click", () => {
+            if (!timer) {
+                timer = setInterval(updateTimer, 1000);
+            }
+        });
+
+        document.getElementById("stopTimerButton").addEventListener("click", () => {
+            clearInterval(timer);
+            timer = null;
+        });
+
+        document.getElementById("resetTimerButton").addEventListener("click", () => {
+            clearInterval(timer);
+            timer = null;
+            seconds = 0;
+            minutes = 0;
+            document.getElementById("timer").textContent = "00:00";
+        });
+
+        function updateTimer() {
+            seconds++;
+            if (seconds === 60) {
+                seconds = 0;
+                minutes++;
+            }
+            document.getElementById("timer").textContent = `${formatTime(minutes)}:${formatTime(seconds)}`;
+        }
+
+        function formatTime(time) {
+            return time < 10 ? `0${time}` : time;
+        }
     </script>
 </body>
 
