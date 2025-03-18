@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treino</title>
+</head>
+<body>
+    <div class="container">
+        <h2>Registre seu Treino</h2>
+        
+        <input type="text" id="exercise" placeholder="Exercício">
+        <input type="number" id="series" placeholder="Séries">
+        <input type="number" id="reps" placeholder="Repetições">
+        <input type="number" id="weight" placeholder="Carga (kg)">
+        <button onclick="addExercise()">Adiciona</button>
+
+        <h2>Treinos Salvos</h2>
+        <ul id="exerciseList"></ul>
+    </div>
+
+    <script src="script.js">
+        <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+    apiKey: "AIzaSyBw9yVvY1T-HFs6CF5ttKgDGafpKW1xr8o",
+    authDomain: "meu-treino-cd8f9.firebaseapp.com",
+    projectId: "meu-treino-cd8f9",
+    storageBucket: "meu-treino-cd8f9.firebasestorage.app",
+    messagingSenderId: "993126178625",
+    appId: "1:993126178625:web:6425d4a03cf0b41e544bc0"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function addExercise() {
+        let exercise = document.getElementById("exercise").value;
+        let series = document.getElementById("series").value;
+        let reps = document.getElementById("reps").value;
+        let weight = document.getElementById("weight").value;
+
+        if (exercise && series && reps && weight) {
+            await addDoc(collection(db, "exercises"), {
+                exercise,
+                series,
+                reps,
+                weight
+            });
+
+            document.getElementById("exercise").value = "";
+            document.getElementById("series").value = "";
+            document.getElementById("reps").value = "";
+            document.getElementById("weight").value = "";
+
+            loadExercises();
+        } else {
+            alert("Preencha todos os campos!");
+        }
+    }
+
+    async function loadExercises() {
+        const querySnapshot = await getDocs(collection(db, "exercises"));
+        let list = document.getElementById("exerciseList");
+        list.innerHTML = "";
+
+        querySnapshot.forEach((doc) => {
+            let data = doc.data();
+            let li = document.createElement("li");
+            li.innerHTML = `${data.exercise} - ${data.series} séries - ${data.reps} reps - ${data.weight} kg 
+                <button class="delete" onclick="deleteExercise('${doc.id}')">🗑️</button>`;
+            list.appendChild(li);
+        });
+    }
+
+    async function deleteExercise(id) {
+        await deleteDoc(doc(db, "exercises", id));
+        loadExercises();
+    }
+
+    document.addEventListener("DOMContentLoaded", loadExercises);
+</script>
+
+    </script>
+</body>
+</html>
