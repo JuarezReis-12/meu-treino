@@ -19,8 +19,9 @@ body {
     align-items: center;
     flex-direction: column;
     height: 100%; /* Garantir que o corpo ocupe 100% da altura */
-    overflow: auto; /* Permitir rolagem */
+    overflow-y: auto; /* Permitir rolagem */
     padding: 20px;
+    -webkit-overflow-scrolling: touch; /* Suporte ao "smooth scrolling" no iOS */
 }
 
 /* Container principal */
