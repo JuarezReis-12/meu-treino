@@ -33,62 +33,79 @@
             appId: "1:993126178625:web:6425d4a03cf0b41e544bc0"
         };
 
+        // Inicializa o Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Função para adicionar o treino
+        // Função para adicionar o treino no Firestore
         async function addExercise() {
             let exercise = document.getElementById("exercise").value;
             let series = document.getElementById("series").value;
             let reps = document.getElementById("reps").value;
             let weight = document.getElementById("weight").value;
 
+            // Verifica se todos os campos estão preenchidos
             if (exercise && series && reps && weight) {
-                await addDoc(collection(db, "exercises"), {
-                    exercise,
-                    series,
-                    reps,
-                    weight
-                });
+                try {
+                    // Adiciona o treino no Firestore
+                    await addDoc(collection(db, "exercises"), {
+                        exercise,
+                        series,
+                        reps,
+                        weight
+                    });
 
-                // Limpar os campos após o cadastro
-                document.getElementById("exercise").value = "";
-                document.getElementById("series").value = "";
-                document.getElementById("reps").value = "";
-                document.getElementById("weight").value = "";
+                    // Limpa os campos após o cadastro
+                    document.getElementById("exercise").value = "";
+                    document.getElementById("series").value = "";
+                    document.getElementById("reps").value = "";
+                    document.getElementById("weight").value = "";
 
-                loadExercises();
+                    // Atualiza a lista de exercícios
+                    loadExercises();
+                } catch (error) {
+                    console.error("Erro ao adicionar exercício: ", error);
+                    alert("Erro ao adicionar exercício.");
+                }
             } else {
                 alert("Preencha todos os campos!");
             }
         }
 
-        // Função para carregar os treinos
+        // Função para carregar os treinos do Firestore
         async function loadExercises() {
-            const querySnapshot = await getDocs(collection(db, "exercises"));
-            let list = document.getElementById("exerciseList");
-            list.innerHTML = "";
+            try {
+                const querySnapshot = await getDocs(collection(db, "exercises"));
+                let list = document.getElementById("exerciseList");
+                list.innerHTML = "";
 
-            querySnapshot.forEach((doc) => {
-                let data = doc.data();
-                let li = document.createElement("li");
-                li.innerHTML = `${data.exercise} - ${data.series} séries - ${data.reps} reps - ${data.weight} kg 
-                    <button class="delete" onclick="deleteExercise('${doc.id}')">🗑️</button>`;
-                list.appendChild(li);
-            });
+                querySnapshot.forEach((doc) => {
+                    let data = doc.data();
+                    let li = document.createElement("li");
+                    li.innerHTML = `${data.exercise} - ${data.series} séries - ${data.reps} reps - ${data.weight} kg 
+                        <button class="delete" onclick="deleteExercise('${doc.id}')">🗑️</button>`;
+                    list.appendChild(li);
+                });
+            } catch (error) {
+                console.error("Erro ao carregar exercícios: ", error);
+            }
         }
 
-        // Função para deletar o treino
+        // Função para deletar um exercício
         async function deleteExercise(id) {
-            await deleteDoc(doc(db, "exercises", id));
-            loadExercises();
+            try {
+                await deleteDoc(doc(db, "exercises", id));
+                loadExercises();
+            } catch (error) {
+                console.error("Erro ao deletar exercício: ", error);
+            }
         }
 
-        // Evento para o botão de adicionar treino
-        document.getElementById("addButton").addEventListener("click", addExercise);
-
-        // Carregar os treinos quando a página carregar
-        document.addEventListener("DOMContentLoaded", loadExercises);
+        // Espera o documento carregar e adiciona o evento ao botão
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("addButton").addEventListener("click", addExercise);
+            loadExercises();
+        });
     </script>
 </body>
 
