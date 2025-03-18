@@ -45,7 +45,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBw9yVvY1T-HFs6CF5ttKgDGafpKW1xr8o",
@@ -138,9 +138,13 @@
         }
 
         window.deleteExercise = async function (id) {
+            console.log("Excluindo exercício com ID:", id);  // Para depuração
+
             const docRef = doc(db, "exercises", id);
             lastDeletedExercise = docRef;
             lastDeletedData = (await getDoc(docRef)).data();
+
+            // Excluir exercício
             await deleteDoc(docRef);
             loadExercises();
             document.getElementById("undoButton").style.display = "block"; // Exibir o botão de desfazer
