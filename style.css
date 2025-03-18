@@ -1,184 +1,137 @@
-/* Resetando margens e padding padrão */
+/* Definindo a fonte e o estilo global */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* Corpo da página */
+html, body {
+    height: 100%; /* Garantir que a altura ocupe 100% da tela */
+    overflow-y: auto; /* Permitir rolagem vertical */
+}
+
 body {
-    font-family: 'Quicksand', sans-serif; /* Fonte moderna e arredondada */
-    background-color: #f9f9f9; /* Cor de fundo suave em pastel */
+    font-family: 'Quicksand', sans-serif;
+    background-color: #f9f9f9;
     color: #333;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
     flex-direction: column;
-    overflow: hidden; /* Evitar rolagem indesejada */
+    height: 100%; /* Garantir que o corpo ocupe 100% da altura */
+    overflow-y: auto; /* Permitir rolagem */
 }
 
-/* Container principal de login */
 #loginContainer, #appContainer {
     width: 90%;
-    max-width: 400px; /* Diminuindo o tamanho */
+    max-width: 400px;
     background-color: #fff;
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     text-align: center;
+    overflow-y: auto; /* Permitir rolagem dentro do container, se necessário */
 }
 
-/* Título */
-h2 {
-    font-family: 'Helvetica Neue', sans-serif;
-    font-weight: 600;
-    color: #2C3E50;
+#loginContainer h2, #appContainer h2 {
+    font-size: 24px;
     margin-bottom: 20px;
 }
 
-/* Inputs */
-input {
+input, button {
     width: 100%;
-    padding: 12px; /* Menor espaçamento para compactar */
+    padding: 12px;
     margin: 8px 0;
+    font-size: 14px;
     border-radius: 8px;
     border: 1px solid #dcdcdc;
-    font-size: 14px; /* Fonte menor */
-    background-color: #f7f7f7; /* Cor de fundo suave */
-}
-
-/* Botões */
-button {
-    width: 100%;
-    padding: 10px; /* Menor altura */
-    margin: 8px 0; /* Espaçamento menor entre botões */
-    border-radius: 8px;
-    border: none;
-    background-color: #a8d8d8; /* Cor pastel suave */
-    color: white;
-    font-size: 14px; /* Tamanho de fonte menor */
-    font-family: 'Arial', sans-serif;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-/* Efeito ao passar o mouse nos botões */
-button:hover {
-    background-color: #7fbfbf;
-}
-
-/* Botão de desfazer */
-#undoButton {
-    background-color: #ffb3b3; /* Tom pastel de vermelho */
-    margin-top: 10px;
-}
-
-#undoButton:hover {
-    background-color: #ff6666; /* Tom de vermelho mais forte */
-}
-
-/* Estilo do cronômetro */
-#timerSection {
-    margin-top: 20px;
-}
-
-#timer {
-    font-size: 28px; /* Fonte menor */
-    font-weight: 600;
-    color: #34495e;
-    margin-bottom: 10px;
-}
-
-/* Links e mensagens */
-p, #loginMessage {
-    color: #7f8c8d;
-    font-size: 14px;
-}
-
-/* Adicionando uma fonte condensada e arredondada */
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500&display=swap');
-
-body {
+    background-color: #f7f7f7;
     font-family: 'Quicksand', sans-serif;
 }
 
-/* Input foco */
-input:focus, button:focus {
-    outline: none;
-    border-color: #3498db;
+/* Ajuste para garantir que a rolagem funcione em telas pequenas */
+#loginContainer, #appContainer, #timerSection, ul#exerciseList {
+    max-height: 90vh; /* Limitar altura para que a rolagem interna aconteça se necessário */
+    overflow-y: auto;
 }
 
-/* Input e botão com border arredondado */
-input, button {
-    border-radius: 8px;
+/* Evitar rolagem horizontal */
+body {
+    overflow-x: hidden; /* Evitar rolagem horizontal */
 }
 
-/* Estilo para os itens da lista de exercícios */
-ul#exerciseList {
-    list-style-type: none;
-    margin-top: 20px;
-    padding-left: 0;
-}
-
-ul#exerciseList li {
-    background-color: #f1f1f1; /* Cor de fundo suave */
-    padding: 12px; /* Menor espaçamento */
-    margin-bottom: 10px; /* Diminuindo a distância entre os itens */
-    border-radius: 8px;
-    font-size: 14px; /* Fonte menor */
-    font-weight: 500;
-    color: #333;
-}
-
-/* Botões dentro da lista de exercícios */
-ul#exerciseList li button {
-    background-color: #f4c7b7; /* Cor pastel suave */
-    font-size: 12px; /* Fonte menor */
-    margin-left: 12px;
-    padding: 6px 12px; /* Diminuindo o tamanho do botão */
+#loginButton, #registerButton, #logoutButton, #undoButton {
+    background-color: #5c6bc0;
+    color: white;
+    border: none;
+    font-size: 16px;
     cursor: pointer;
-    border-radius: 6px;
+    border-radius: 8px;
+    padding: 12px 0;
 }
 
-ul#exerciseList li button:hover {
-    background-color: #f19c73; /* Tom mais forte ao passar o mouse */
+#loginButton:hover, #registerButton:hover, #logoutButton:hover, #undoButton:hover {
+    background-color: #3f51b5;
 }
 
-/* Ajuste para layout do app */
-#appContainer {
-    display: none;
-    text-align: center;
+button:disabled {
+    background-color: #b0bec5;
 }
 
-#exerciseList {
+/* Ajustes no cronômetro */
+#timerSection {
+    margin-top: 20px;
+    background-color: #f1f1f1;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#timerSection button {
+    width: 30%;
+    margin: 5px;
+}
+
+#exerciseList li {
+    background-color: #f3f3f3;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#exerciseList li button {
+    margin-left: 8px;
+}
+
+/* Para o botão de desfazer */
+#undoButton {
+    background-color: #8bc34a;
+    color: white;
+    border-radius: 8px;
     margin-top: 20px;
 }
 
-/* Container para os botões de ação */
-button#addButton, button#logoutButton, button#undoButton {
-    width: 100%;
-    padding: 10px; /* Diminuindo a altura */
-    margin: 8px 0; /* Menor espaçamento entre os botões */
-    font-size: 14px;
-    border-radius: 8px;
-}
+/* Garantir que o layout no dispositivo móvel seja adequado */
+@media (max-width: 600px) {
+    #loginContainer, #appContainer {
+        width: 100%;
+        padding: 15px;
+    }
 
-/* Garantir que não tenha borda ou cor extra no topo */
-#loginContainer, #appContainer {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
+    input, button {
+        font-size: 14px;
+        padding: 10px;
+    }
 
-/* Ajuste do topo para não ter bordas ou elementos cortados */
-#loginContainer, #appContainer {
-    margin-top: 0; /* Garantir que o container não tenha margens extras */
-}
+    #timerSection button {
+        width: 40%;
+    }
 
-/* Remover borda azul inesperada ao foco */
-input:focus, button:focus {
-    outline: none; /* Retira a borda azul que pode aparecer ao focar nos campos */
-    border: 1px solid #3498db; /* Borda fina azul só para foco */
+    #undoButton {
+        width: 100%;
+    }
 }
