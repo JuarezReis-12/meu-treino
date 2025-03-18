@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 document.addEventListener("DOMContentLoaded", loadExercises);
 
 function addExercise() {
@@ -106,4 +106,3 @@ function loadExercises() {
         list.appendChild(li);
     });
 }
->>>>>>> 8e2219775edcd71b22cf0caa65146ae6ae9721e3
