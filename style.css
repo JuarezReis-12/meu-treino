@@ -1,123 +1,184 @@
-
-body {
-    font-family: Arial, sans-serif;
-    background-color: #e4e4e4;
-    text-align: center;
-    padding: 20px;
+/* Resetando margens e padding padrão */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-.container {
-    max-width: 400px;
-    background: white;
+/* Corpo da página */
+body {
+    font-family: 'Quicksand', sans-serif; /* Fonte moderna e arredondada */
+    background-color: #f9f9f9; /* Cor de fundo suave em pastel */
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    overflow: hidden; /* Evitar rolagem indesejada */
+}
+
+/* Container principal de login */
+#loginContainer, #appContainer {
+    width: 90%;
+    max-width: 400px; /* Diminuindo o tamanho */
+    background-color: #fff;
     padding: 20px;
-    margin: auto;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Título */
+h2 {
+    font-family: 'Helvetica Neue', sans-serif;
+    font-weight: 600;
+    color: #2C3E50;
+    margin-bottom: 20px;
+}
+
+/* Inputs */
+input {
+    width: 100%;
+    padding: 12px; /* Menor espaçamento para compactar */
+    margin: 8px 0;
+    border-radius: 8px;
+    border: 1px solid #dcdcdc;
+    font-size: 14px; /* Fonte menor */
+    background-color: #f7f7f7; /* Cor de fundo suave */
+}
+
+/* Botões */
+button {
+    width: 100%;
+    padding: 10px; /* Menor altura */
+    margin: 8px 0; /* Espaçamento menor entre botões */
+    border-radius: 8px;
+    border: none;
+    background-color: #a8d8d8; /* Cor pastel suave */
+    color: white;
+    font-size: 14px; /* Tamanho de fonte menor */
+    font-family: 'Arial', sans-serif;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Efeito ao passar o mouse nos botões */
+button:hover {
+    background-color: #7fbfbf;
+}
+
+/* Botão de desfazer */
+#undoButton {
+    background-color: #ffb3b3; /* Tom pastel de vermelho */
+    margin-top: 10px;
+}
+
+#undoButton:hover {
+    background-color: #ff6666; /* Tom de vermelho mais forte */
+}
+
+/* Estilo do cronômetro */
+#timerSection {
+    margin-top: 20px;
+}
+
+#timer {
+    font-size: 28px; /* Fonte menor */
+    font-weight: 600;
+    color: #34495e;
+    margin-bottom: 10px;
+}
+
+/* Links e mensagens */
+p, #loginMessage {
+    color: #7f8c8d;
+    font-size: 14px;
+}
+
+/* Adicionando uma fonte condensada e arredondada */
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500&display=swap');
+
+body {
+    font-family: 'Quicksand', sans-serif;
+}
+
+/* Input foco */
+input:focus, button:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+/* Input e botão com border arredondado */
+input, button {
     border-radius: 8px;
 }
 
-input {
-    width: 90%;
-    padding: 10px;
-    margin: 5px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+/* Estilo para os itens da lista de exercícios */
+ul#exerciseList {
+    list-style-type: none;
+    margin-top: 20px;
+    padding-left: 0;
 }
 
-button {
-    width: 95%;
-    padding: 10px;
-    background: #28a745;
-    color: white;
-    border: none;
-    border-radius: 5px;
+ul#exerciseList li {
+    background-color: #f1f1f1; /* Cor de fundo suave */
+    padding: 12px; /* Menor espaçamento */
+    margin-bottom: 10px; /* Diminuindo a distância entre os itens */
+    border-radius: 8px;
+    font-size: 14px; /* Fonte menor */
+    font-weight: 500;
+    color: #333;
+}
+
+/* Botões dentro da lista de exercícios */
+ul#exerciseList li button {
+    background-color: #f4c7b7; /* Cor pastel suave */
+    font-size: 12px; /* Fonte menor */
+    margin-left: 12px;
+    padding: 6px 12px; /* Diminuindo o tamanho do botão */
     cursor: pointer;
+    border-radius: 6px;
 }
 
-button:hover {
-    background: #218838;
+ul#exerciseList li button:hover {
+    background-color: #f19c73; /* Tom mais forte ao passar o mouse */
 }
 
-ul {
-    list-style: none;
-    padding: 0;
-}
-
-li {
-    background: #fff;
-    padding: 10px;
-    margin: 5px 0;
-    border-radius: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-button.delete {
-    background: red;
-    color: white;
-    padding: 5px;
-    border: none;
-    cursor: pointer;
-}
-=======
-body {
-    font-family: Arial, sans-serif;
-    background-color: #00008b;
+/* Ajuste para layout do app */
+#appContainer {
+    display: none;
     text-align: center;
-    padding: 20px;
 }
 
-.container {
-    max-width: 400px;
-    background: white;
-    padding: 20px;
-    margin: auto;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+#exerciseList {
+    margin-top: 20px;
+}
+
+/* Container para os botões de ação */
+button#addButton, button#logoutButton, button#undoButton {
+    width: 100%;
+    padding: 10px; /* Diminuindo a altura */
+    margin: 8px 0; /* Menor espaçamento entre os botões */
+    font-size: 14px;
     border-radius: 8px;
 }
 
-input {
-    width: 90%;
-    padding: 10px;
-    margin: 5px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+/* Garantir que não tenha borda ou cor extra no topo */
+#loginContainer, #appContainer {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-button {
-    width: 95%;
-    padding: 10px;
-    background: #28a745;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+/* Ajuste do topo para não ter bordas ou elementos cortados */
+#loginContainer, #appContainer {
+    margin-top: 0; /* Garantir que o container não tenha margens extras */
 }
 
-button:hover {
-    background: #218838;
+/* Remover borda azul inesperada ao foco */
+input:focus, button:focus {
+    outline: none; /* Retira a borda azul que pode aparecer ao focar nos campos */
+    border: 1px solid #3498db; /* Borda fina azul só para foco */
 }
-
-ul {
-    list-style: none;
-    padding: 0;
-}
-
-li {
-    background: #fff;
-    padding: 10px;
-    margin: 5px 0;
-    border-radius: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-button.delete {
-    background: red;
-    color: white;
-    padding: 5px;
-    border: none;
-    cursor: pointer;
-}
-
