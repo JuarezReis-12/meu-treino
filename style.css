@@ -7,10 +7,7 @@
 
 html, body {
     height: 100%; /* Garantir que a altura ocupe 100% da tela */
-    overflow: hidden; /* Evitar rolagem na tela inteira */
-}
-
-body {
+    overflow-y: auto; /* Permitir rolagem */
     font-family: 'Quicksand', sans-serif;
     background-color: #f9f9f9;
     color: #333;
@@ -18,8 +15,6 @@ body {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    height: 100%; /* Garantir que o corpo ocupe 100% da altura */
-    overflow-y: auto; /* Permitir rolagem */
     padding: 20px;
     -webkit-overflow-scrolling: touch; /* Suporte ao "smooth scrolling" no iOS */
 }
@@ -52,6 +47,12 @@ input, button {
     border: 1px solid #dcdcdc;
     background-color: #f7f7f7;
     font-family: 'Quicksand', sans-serif;
+    position: relative; /* Garantir que o botão tenha um contexto de empilhamento */
+    z-index: 1; /* Garantir que o botão esteja na frente de outros elementos */
+}
+
+button {
+    cursor: pointer; /* Garantir que o botão tenha o cursor correto */
 }
 
 /* Botões */
@@ -60,9 +61,8 @@ input, button {
     color: white;
     border: none;
     font-size: 16px;
-    cursor: pointer;
-    border-radius: 8px;
     padding: 12px 0;
+    border-radius: 8px;
 }
 
 #loginButton:hover, #registerButton:hover, #logoutButton:hover, #undoButton:hover {
@@ -108,6 +108,80 @@ button:disabled {
     color: white;
     border-radius: 8px;
     margin-top: 20px;
+}
+
+/* Container do perfil */
+#profileContainer {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Título do perfil */
+#profileContainer h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* Seção da foto de perfil */
+#profilePictureSection {
+    margin-bottom: 20px;
+}
+
+/* Label para upload da foto */
+#fileLabel {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #5c6bc0;
+    cursor: pointer;
+}
+
+/* Input de arquivo */
+#fileUpload {
+    display: none; /* Esconde o input original */
+}
+
+/* Visualização da imagem de perfil */
+#previewSection {
+    margin-top: 10px;
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    background-color: #e0e0e0;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+/* Imagem de perfil */
+#profilePicture {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: none; /* Inicialmente, escondida */
+}
+
+/* Botão de salvar */
+#saveProfileButton {
+    background-color: #5c6bc0;
+    color: white;
+    border: none;
+    font-size: 16px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+}
+
+#saveProfileButton:hover {
+    background-color: #3f51b5;
 }
 
 /* Garantir que o layout no dispositivo móvel seja adequado */
