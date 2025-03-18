@@ -7,7 +7,7 @@
 
 html, body {
     height: 100%; /* Garantir que a altura ocupe 100% da tela */
-    overflow-y: auto; /* Permitir rolagem vertical */
+    overflow: hidden; /* Evitar rolagem na tela inteira */
 }
 
 body {
@@ -19,20 +19,24 @@ body {
     align-items: center;
     flex-direction: column;
     height: 100%; /* Garantir que o corpo ocupe 100% da altura */
-    overflow-y: auto; /* Permitir rolagem */
+    overflow: auto; /* Permitir rolagem */
+    padding: 20px;
 }
 
+/* Container principal */
 #loginContainer, #appContainer {
-    width: 90%;
+    width: 100%;
     max-width: 400px;
     background-color: #fff;
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     text-align: center;
-    overflow-y: auto; /* Permitir rolagem dentro do container, se necessário */
+    overflow-y: auto; /* Permitir rolagem interna */
+    margin-bottom: 20px;
 }
 
+/* Títulos */
 #loginContainer h2, #appContainer h2 {
     font-size: 24px;
     margin-bottom: 20px;
@@ -49,17 +53,7 @@ input, button {
     font-family: 'Quicksand', sans-serif;
 }
 
-/* Ajuste para garantir que a rolagem funcione em telas pequenas */
-#loginContainer, #appContainer, #timerSection, ul#exerciseList {
-    max-height: 90vh; /* Limitar altura para que a rolagem interna aconteça se necessário */
-    overflow-y: auto;
-}
-
-/* Evitar rolagem horizontal */
-body {
-    overflow-x: hidden; /* Evitar rolagem horizontal */
-}
-
+/* Botões */
 #loginButton, #registerButton, #logoutButton, #undoButton {
     background-color: #5c6bc0;
     color: white;
@@ -78,7 +72,7 @@ button:disabled {
     background-color: #b0bec5;
 }
 
-/* Ajustes no cronômetro */
+/* Ajuste no cronômetro */
 #timerSection {
     margin-top: 20px;
     background-color: #f1f1f1;
@@ -133,5 +127,17 @@ button:disabled {
 
     #undoButton {
         width: 100%;
+    }
+
+    /* Ajuste adicional para garantir que o conteúdo da página tenha rolagem em dispositivos móveis */
+    body {
+        overflow-y: scroll; /* Permitir rolagem */
+        -webkit-overflow-scrolling: touch; /* Suporte ao "smooth scrolling" no iOS */
+    }
+
+    /* Container que pode ter conteúdo rolável */
+    #loginContainer, #appContainer, #timerSection, ul#exerciseList {
+        max-height: 90vh; /* Limitar altura para garantir rolagem interna */
+        overflow-y: auto;
     }
 }
